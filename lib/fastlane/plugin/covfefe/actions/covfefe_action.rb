@@ -3,35 +3,51 @@ module Fastlane
     class CovfefeAction < Action
       def self.run(params)
         require 'mustache'
+        require 'tmpdir'
 
-        name = params[:name]
-        input_path = File.expand_path params[:input_path]
-        output_path = File.expand_path params[:output_path]
-        breadcrumbs = params[:output_path]
+        Dir.mktmpdir("repo_clone") do |tmp_path|
 
-        options = Hash.new
-        options[:name] = name
+          name = params[:name]
+          input_path = File.expand_path params[:input_path]
+          output_path = File.expand_path params[:output_path]
+          breadcrumbs = params[:output_path]
 
-        FileUtils.mkdir_p(output_path)
+          options = Hash.new
+          options[:name] = name
+          options = options.merge(params[:extra_options])
 
-        self.handle(options, input_path, output_path, breadcrumbs)
+          if params[:repo].to_s.length > 0
+            repo = params[:repo]
+            repo_name = repo.split("/").last
+            repo_path = File.join(tmp_path, repo_name)
+
+            UI.message "Cloning remote git repo..."
+            clone_command = "GIT_TERMINAL_PROMPT=0 git clone '#{repo}' '#{repo_path}' --depth 1"
+            Actions.sh(clone_command)
+
+            input_path = File.join(repo_path, params[:input_path])
+          end
+
+          FileUtils.mkdir_p(output_path)
+          self.handle(options, input_path, output_path, breadcrumbs)
+        end
 
         UI.message("Allright 🙌  it is all done.")
       end
 
       def self.handle(options, input_path, output_path, breadcrumbs)
         Dir.entries(input_path).select { |f|
-          next if f == '.' or f == '..'
+          next if f == '.' or f == '..' or f == '.git'
           mustached = Mustache.render(f, name: options[:name])
-          input = "#{input_path}/#{f}"
-          output = "#{output_path}/#{mustached}"
+          input = File.join(input_path, f)
+          output = File.join(output_path, mustached)
           if File.directory? input
-            breadcrumbs = "#{breadcrumbs}/#{mustached}"
+            breadcrumbs = File.join(breadcrumbs, mustached)
             UI.message "Creating: #{breadcrumbs}"
             FileUtils.mkdir_p(output)
             self.handle(options, input, output, breadcrumbs)
           else
-            UI.message "Creating: #{breadcrumbs}/#{mustached}"
+            UI.message "Creating: #{File.join(breadcrumbs, mustached)}"
             string = File.read(input)
             string = Mustache.render(string, name: options[:name])
             File.write(output, string)
@@ -70,6 +86,16 @@ module Fastlane
                                        env_name: "FL_PI_MUSTACHE_NAME",
                                        description: "common name of the file structures",
                                        optional: false,
+                                       type: String),
+          FastlaneCore::ConfigItem.new(key: :extra_options,
+                                       env_name: "FL_PI_MUSTACHE_EXTRA_OPTIONS",
+                                       description: "extra values that that mustache can replace",
+                                       default_value: Hash.new,
+                                       type: Hash),
+          FastlaneCore::ConfigItem.new(key: :repo,
+                                       env_name: "FL_PI_MUSTACHE_REPO",
+                                       description: "the repo the input path is in",
+                                       optional: true,
                                        type: String)
         ]
       end

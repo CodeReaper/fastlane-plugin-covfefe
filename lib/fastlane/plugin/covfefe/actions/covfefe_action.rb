@@ -7,9 +7,11 @@ module Fastlane
 
         Dir.mktmpdir("repo_clone") do |tmp_path|
 
-          name = params[:name]
+          name = params[:options][:name]
           input_path = File.expand_path params[:input_path]
-          output_path = File.expand_path params[:output_path]
+          output_path = params[:output_path]
+          output_path = File.join(output_path, params[:options][:in]) unless params[:options][:in].to_s.length == 0
+          output_path = File.expand_path output_path
           breadcrumbs = params[:output_path]
 
           options = Hash.new
@@ -82,11 +84,11 @@ module Fastlane
                                        default_value: FastlaneCore::FastlaneFolder.path + "../",
                                        optional: false,
                                        type: String),
-          FastlaneCore::ConfigItem.new(key: :name,
-                                       env_name: "FL_PI_MUSTACHE_NAME",
-                                       description: "common name of the file structures",
-                                       optional: false,
-                                       type: String),
+          FastlaneCore::ConfigItem.new(key: :options,
+                                       env_name: "FL_PI_MUSTACHE_OPTIONS",
+                                       description: "name:common name of the file structures; in:optional path prefix the common name with;",
+                                       default_value: Hash.new,
+                                       type: Hash),
           FastlaneCore::ConfigItem.new(key: :extra_options,
                                        env_name: "FL_PI_MUSTACHE_EXTRA_OPTIONS",
                                        description: "extra values that that mustache can replace",

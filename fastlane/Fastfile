@@ -1,3 +1,9 @@
-lane :test do
-  covfefe
+
+lane :make do |options|
+	covfefe(
+	  output_path: "examples/output",
+	  input_path: "examples/input",
+	  repo: "https://github.com/CodeReaper/fastlane-plugin-covfefe", # leave out, if the input_path is a local path
+	  options:options
+	)
 end

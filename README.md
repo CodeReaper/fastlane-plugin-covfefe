@@ -12,15 +12,11 @@ fastlane add_plugin covfefe
 
 ## About covfefe
 
-A templating engine for generating common file structures.
-
-**Note to author:** Add a more detailed description about this plugin here. If your plugin contains multiple actions, make sure to mention them here.
+A templating engine for generating common file structures like VIPER and MVVM. Note that templates are not included in this repo, only an example have been added for demonstration purposes.
 
 ## Example
 
-Check out the [example `Fastfile`](fastlane/Fastfile) to see how to use this plugin. Try it by cloning the repo, running `fastlane install_plugins` and `bundle exec fastlane test`.
-
-**Note to author:** Please set up a sample project to make it easy for users to explore what your plugin does. Provide everything that is necessary to try out the plugin in this project (including a sample Xcode/Android project if necessary)
+Check out the [example `Fastfile`](fastlane/Fastfile) to see how to use this plugin. Try it by cloning the repo, running `fastlane install_plugins` and `bundle exec fastlane make name:MyName in:SomeFolder`.
 
 ## Run tests for this plugin
 

@@ -6,7 +6,6 @@ module Fastlane
         require 'tmpdir'
 
         Dir.mktmpdir("repo_clone") do |tmp_path|
-
           name = params[:options][:name]
           input_path = File.expand_path params[:input_path]
           output_path = params[:output_path]
@@ -14,7 +13,7 @@ module Fastlane
           output_path = File.expand_path output_path
           breadcrumbs = params[:output_path]
 
-          options = Hash.new
+          options = {}
           options[:name] = name
           options = options.merge(params[:extra_options])
 
@@ -38,8 +37,8 @@ module Fastlane
       end
 
       def self.handle(options, input_path, output_path, breadcrumbs)
-        Dir.entries(input_path).select { |f|
-          next if f == '.' or f == '..' or f == '.git'
+        Dir.entries(input_path).select do |f|
+          next if ['.', '..', '.git'].include?(f)
           mustached = Mustache.render(f, name: options[:name])
           input = File.join(input_path, f)
           output = File.join(output_path, mustached)
@@ -54,7 +53,7 @@ module Fastlane
             string = Mustache.render(string, name: options[:name])
             File.write(output, string)
           end
-        }
+        end
       end
 
       def self.description
@@ -87,12 +86,12 @@ module Fastlane
           FastlaneCore::ConfigItem.new(key: :options,
                                        env_name: "FL_PI_MUSTACHE_OPTIONS",
                                        description: "name:common name of the file structures; in:optional path prefix the common name with;",
-                                       default_value: Hash.new,
+                                       default_value: {},
                                        type: Hash),
           FastlaneCore::ConfigItem.new(key: :extra_options,
                                        env_name: "FL_PI_MUSTACHE_EXTRA_OPTIONS",
                                        description: "extra values that that mustache can replace",
-                                       default_value: Hash.new,
+                                       default_value: {},
                                        type: Hash),
           FastlaneCore::ConfigItem.new(key: :repo,
                                        env_name: "FL_PI_MUSTACHE_REPO",

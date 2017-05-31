@@ -1,4 +1,5 @@
 # coding: utf-8
+
 lib = File.expand_path("../lib", __FILE__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 require 'fastlane/plugin/covfefe/version'
@@ -6,10 +7,10 @@ require 'fastlane/plugin/covfefe/version'
 Gem::Specification.new do |spec|
   spec.name          = 'fastlane-plugin-covfefe'
   spec.version       = Fastlane::Covfefe::VERSION
-  spec.author        = %q{Jakob Jensen}
-  spec.email         = %q{jje@trifork.com}
+  spec.author        = 'Jakob Jensen'
+  spec.email         = 'jje@trifork.com'
 
-  spec.summary       = %q{A templating engine for generating common file structures.}
+  spec.summary       = 'A templating engine for generating common file structures.'
   # spec.homepage      = "https://github.com/<GITHUB_USERNAME>/fastlane-plugin-covfefe"
   spec.license       = "MIT"
 
